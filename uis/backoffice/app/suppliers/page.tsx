@@ -34,8 +34,7 @@ const VALID_CATEGORIES = [
   "cleaning_and_facilities",
 ] as const;
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_SUPPLIER_API_URL ?? "http://localhost:8000";
+const API_BASE_URL = "/api";
 
 const emptyForm: CreateSupplierPayload = {
   name: "",

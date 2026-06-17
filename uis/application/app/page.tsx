@@ -1,7 +1,7 @@
 import {
   buildExecutiveSnapshot,
   milestone2SampleInput,
-} from "../../../packages/shared/business-logic/milestone2";
+} from "@/lib/milestone2";
 import Link from "next/link";
 
 export default function Home() {
