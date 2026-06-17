@@ -3,7 +3,7 @@ from app.models import SupplierCreate, utc_now
 from app.seed_data import SUPPLIERS_SEED
 
 
-def test_seed_is_idempotent():
+def test_seed_is_idempotent(isolated_db):
     now = utc_now().isoformat()
     normalized = []
 

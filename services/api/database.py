@@ -73,6 +73,9 @@ def update_supplier(doc_id: int, updates: dict) -> dict | None:
 
 def delete_supplier(doc_id: int) -> bool:
     table = suppliers_table()
+    if table.get(doc_id=doc_id) is None:
+        return False
+
     deleted = table.remove(doc_ids=[doc_id])
     return bool(deleted)
 
