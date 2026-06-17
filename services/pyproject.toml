@@ -5,6 +5,7 @@ description = "TrackFlow supplier management API"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "email-validator>=2.2.0",
   "fastapi>=0.116.0",
   "tinydb>=4.8.2",
   "uvicorn>=0.35.0"
@@ -22,6 +23,9 @@ seed = "seed:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["api", "seed.py"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
