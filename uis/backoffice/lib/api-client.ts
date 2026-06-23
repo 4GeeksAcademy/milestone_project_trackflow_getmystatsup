@@ -1,4 +1,4 @@
-import { clearToken, getToken } from "@/lib/auth";
+import { clearToken, getToken, isTokenValid } from "@/lib/auth";
 
 export class ApiError extends Error {
   status: number;
@@ -173,9 +173,9 @@ export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {
   if (requireAuth) {
     const token = getToken();
 
-    if (!token) {
+    if (!token || !isTokenValid(token)) {
       handleUnauthorized();
-      throw new ApiError("You need to sign in to continue.", 401);
+      throw new ApiError("Your session has expired. Please sign in again.", 401);
     }
 
     requestHeaders.set("Authorization", `Bearer ${token}`);
