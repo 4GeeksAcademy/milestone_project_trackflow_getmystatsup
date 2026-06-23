@@ -1,0 +1,17 @@
+{
+  "statuses": ["open", "in_progress", "resolved", "discarded"],
+  "origins": ["customer", "branch", "internal"],
+  "categories": [
+    "lost_parcel",
+    "failed_delivery",
+    "wrong_address",
+    "inventory_discrepancy"
+  ],
+  "branches": ["Los Angeles", "Zaragoza", "Central"],
+  "lifecycle": {
+    "open": ["in_progress", "discarded"],
+    "in_progress": ["resolved", "discarded"],
+    "resolved": [],
+    "discarded": []
+  }
+}
