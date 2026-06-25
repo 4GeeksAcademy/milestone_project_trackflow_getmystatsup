@@ -152,6 +152,9 @@ export default function LeadForm() {
         valid = url.protocol === "http:" || url.protocol === "https:";
       } catch {
         valid = false;
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Invalid website URL provided in lead form.");
+        }
       }
 
       if (!valid) {
@@ -177,7 +180,8 @@ export default function LeadForm() {
     if (!validate()) {
       setStatus({
         kind: "error",
-        message: "Please review the highlighted fields and try again.",
+        message:
+          "Please review the highlighted fields and try again. If you need help, contact comercial@trackflow.com.",
       });
       return;
     }
@@ -190,8 +194,6 @@ export default function LeadForm() {
       leadTier: score.tier,
       assignedRoute: score.route,
     };
-
-    console.log("TrackFlow lead payload:", payload);
 
     setStatus({
       kind: "success",

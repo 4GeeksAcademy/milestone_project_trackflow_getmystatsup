@@ -139,6 +139,9 @@ function validateForm() {
       new URL(url);
     } catch {
       urlIsValid = false;
+      if (window?.location?.hostname === 'localhost') {
+        console.warn('Invalid website URL provided in lead form.');
+      }
     }
 
     if (!startsWithProtocol || !urlIsValid) {
@@ -255,12 +258,14 @@ form.addEventListener('submit', (event) => {
   updateWarningBanner();
 
   if (!isValid) {
-    showStatus('Please review the highlighted fields and try again.', 'error');
+    showStatus(
+      'Please review the highlighted fields and try again. If you need help, contact <a href="mailto:comercial@trackflow.com" class="link">comercial@trackflow.com</a>.',
+      'error'
+    );
     return;
   }
 
   const payload = buildPayload();
-  console.log('TrackFlow lead payload:', payload);
 
   showStatus(
     `
