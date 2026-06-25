@@ -31,7 +31,7 @@ function getResetExpiryMinutes(): number {
   return Math.max(15, Math.min(60, Math.floor(raw)));
 }
 
-export function createPasswordResetToken(userId: string): string {
+export async function createPasswordResetToken(userId: string): Promise<string> {
   const secret = getJwtSecret();
   const jti = crypto.randomUUID();
   const expiresInMinutes = getResetExpiryMinutes();
@@ -47,12 +47,12 @@ export function createPasswordResetToken(userId: string): string {
     expiresIn: `${expiresInMinutes}m`,
   });
 
-  saveResetToken(jti, userId, expiresAt);
+  await saveResetToken(jti, userId, expiresAt);
 
   return token;
 }
 
-export function verifyPasswordResetToken(token: string): VerifiedPasswordResetToken | null {
+export async function verifyPasswordResetToken(token: string): Promise<VerifiedPasswordResetToken | null> {
   try {
     const payload = jwt.verify(token, getJwtSecret());
 
@@ -68,7 +68,7 @@ export function verifyPasswordResetToken(token: string): VerifiedPasswordResetTo
       return null;
     }
 
-    if (!isResetTokenActive(jti, userId)) {
+    if (!(await isResetTokenActive(jti, userId))) {
       return null;
     }
 

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const searchParams = useSearchParams();
   const resetStatus = searchParams.get("reset");
 
@@ -55,5 +56,13 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

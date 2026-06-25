@@ -18,13 +18,14 @@ export async function POST(request: Request) {
   }
 
   if (email) {
-    const user = findUserByEmail(email);
+    const user = await findUserByEmail(email);
 
     if (user) {
       try {
-        const token = createPasswordResetToken(user.id);
+        const token = await createPasswordResetToken(user.id);
         await sendPasswordResetEmail(user.email, token);
-      } catch {
+      } catch (error) {
+        console.error("Password reset email delivery failed", error);
         // Intentionally swallow errors to prevent account enumeration by behavior differences.
       }
     }

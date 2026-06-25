@@ -4,10 +4,10 @@ function getAppBaseUrl(): string {
   return process.env.APP_BASE_URL?.trim() || "http://localhost:3000";
 }
 
-function getResendClient(): Resend | null {
+function getResendClient(): Resend {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) {
-    return null;
+    throw new Error("RESEND_API_KEY is required to send password reset emails");
   }
 
   return new Resend(apiKey);
@@ -17,12 +17,7 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
   const resetLink = `${getAppBaseUrl()}/reset-password?token=${encodeURIComponent(token)}`;
   const resend = getResendClient();
 
-  if (!resend) {
-    console.warn(`RESEND_API_KEY is not set. Password reset link for ${email}: ${resetLink}`);
-    return;
-  }
-
-  await resend.emails.send({
+  const response = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL?.trim() || "onboarding@resend.dev",
     to: email,
     subject: "Reset your TrackFlow password",
@@ -40,4 +35,8 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
     `,
     text: `Reset your TrackFlow password\n\nOpen this link: ${resetLink}\n\nIf you did not request this, you can ignore this email.`,
   });
+
+  if (response.error) {
+    throw new Error(`Resend failed to send password reset email: ${response.error.message}`);
+  }
 }

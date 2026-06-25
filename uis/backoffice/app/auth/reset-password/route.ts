@@ -28,25 +28,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
   }
 
-  const verified = verifyPasswordResetToken(token);
+  const verified = await verifyPasswordResetToken(token);
 
   if (!verified) {
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
   }
 
-  const user = findUserById(verified.userId);
+  const user = await findUserById(verified.userId);
 
   if (!user) {
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
   }
 
-  const consumed = consumeResetToken(verified.jti, verified.userId);
+  const consumed = await consumeResetToken(verified.jti, verified.userId);
   if (!consumed) {
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 12);
-  const didUpdate = updateUserPassword(user.id, passwordHash);
+  const didUpdate = await updateUserPassword(user.id, passwordHash);
 
   if (!didUpdate) {
     return NextResponse.json({ error: "Unable to reset password" }, { status: 500 });

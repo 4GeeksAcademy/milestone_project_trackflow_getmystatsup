@@ -28,6 +28,7 @@ RESET_TOKEN_EXPIRY_MINUTES=30
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxx
 RESEND_FROM_EMAIL=onboarding@resend.dev
 APP_BASE_URL=http://localhost:3000
+AUTH_STORE_FILE=.data/auth-store.json
 ```
 
 Optional local demo auth user values:
@@ -40,6 +41,8 @@ AUTH_DEMO_USER_PASSWORD=ChangeMe123!
 Notes:
 - `RESET_TOKEN_EXPIRY_MINUTES` is clamped to 15-60 minutes.
 - `RESEND_API_KEY` must come from your environment; never hardcode it.
+- `RESEND_API_KEY` is required for actual password reset email delivery.
+- `AUTH_STORE_FILE` lets you persist users and reset tokens across app restarts.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

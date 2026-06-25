@@ -19,3 +19,9 @@
 - Resend email integration for reset links via environment variables only.
 - Frontend pages `/login`, `/forgot-password`, and `/reset-password` including required UX behavior.
 - Lint validation passed after implementation.
+
+-6/25/26 Hardened AUTH-03 after audit findings:
+- Replaced in-memory auth state with a file-backed persistent store so passwords and single-use reset tokens survive app restarts.
+- Removed the console-only email fallback and now require a configured Resend API key for real password reset delivery.
+- Added `AUTH_STORE_FILE` documentation and ignored the local auth data directory from git.
+- Lint validation passed after the refactor.
