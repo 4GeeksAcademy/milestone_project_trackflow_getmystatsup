@@ -1,27 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { hasValidSession, logout } from "@/lib/auth";
 
 export default function ProtectedShell({ children }: PropsWithChildren) {
+  const router = useRouter();
   const pathname = usePathname();
-  const [ready, setReady] = useState(false);
+  const [ready] = useState(() => hasValidSession());
 
   useEffect(() => {
     if (!hasValidSession()) {
-      window.location.assign("/login");
-      return;
+      router.replace("/login");
     }
-
-    const timeoutId = window.setTimeout(() => {
-      setReady(true);
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, []);
+  }, [router]);
 
   const links = useMemo(
     () => [

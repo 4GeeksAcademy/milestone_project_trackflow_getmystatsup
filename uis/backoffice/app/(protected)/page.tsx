@@ -1,30 +1,10 @@
+import {
+  buildExecutiveSnapshot,
+  milestone2SampleInput,
+} from "../../../../packages/shared/business-logic/milestone2";
+
 export default function DashboardPage() {
-  const snapshot = {
-    globalShipmentVolume: 3450,
-    globalOnTimeRate: 92.9,
-    globalReturnRate: 4.32,
-    averageCsat: 85.8,
-    performanceStatus: "Healthy",
-    totalOperatingCostUsd: 267800,
-    countryBreakdown: [
-      {
-        country: "Brazil",
-        shipmentVolume: 1940,
-        onTimeRate: 92.01,
-        returnRate: 4.54,
-        customerSatisfaction: 84.2,
-        operatingCostUsd: 148500,
-      },
-      {
-        country: "Portugal",
-        shipmentVolume: 1510,
-        onTimeRate: 94.04,
-        returnRate: 4.04,
-        customerSatisfaction: 87.4,
-        operatingCostUsd: 119300,
-      },
-    ],
-  };
+  const snapshot = buildExecutiveSnapshot(milestone2SampleInput);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-10 md:px-10">
