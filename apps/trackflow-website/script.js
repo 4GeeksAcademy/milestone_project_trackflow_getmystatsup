@@ -1,3 +1,5 @@
+const API_BASE = window.TRACKFLOW_API_URL ?? "http://localhost:4000";
+
 const form = document.getElementById('lead-form');
 const statusBox = document.getElementById('form-status');
 const volumeWarning = document.getElementById('volume-warning');
@@ -63,6 +65,11 @@ function clearError(fieldName) {
 function clearStatus() {
   statusBox.className = 'hidden rounded-md border px-4 py-3 text-sm';
   statusBox.textContent = '';
+}
+
+function showLoadingStatus() {
+  statusBox.className = 'rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900';
+  statusBox.textContent = 'Sending your request…';
 }
 
 function showStatus(message, type) {
@@ -251,7 +258,16 @@ function buildPayload() {
   };
 }
 
-form.addEventListener('submit', (event) => {
+async function parseApiError(response) {
+  try {
+    const body = await response.json();
+    return body?.error?.message ?? 'Something went wrong. Please try again or contact comercial@trackflow.com for help.';
+  } catch {
+    return 'Something went wrong. Please try again or contact comercial@trackflow.com for help.';
+  }
+}
+
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const isValid = validateForm();
@@ -266,19 +282,58 @@ form.addEventListener('submit', (event) => {
   }
 
   const payload = buildPayload();
+  const submitButton = form.querySelector('button[type="submit"]');
+  let isSubmitting = false;
 
-  showStatus(
-    `
-    <strong>Thank you for your interest in TrackFlow!</strong><br />
+  try {
+    isSubmitting = true;
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending…';
+    }
+    showLoadingStatus();
+
+    const response = await fetch(`${API_BASE}/api/leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...payload, privacy: payload.privacyAccepted })
+    });
+
+    if (!response.ok) {
+      const message = await parseApiError(response);
+      showStatus(
+        `${message} If the problem continues, contact <a href="mailto:comercial@trackflow.com" class="link">comercial@trackflow.com</a>.`,
+        'error'
+      );
+      return;
+    }
+
+    const body = await response.json();
+
+    showStatus(
+      `
+    <strong>${body?.message ?? 'Thank you for your interest in TrackFlow!'}</strong><br />
     We have received your request. Our commercial team will review your information and contact you within the next 24-48 hours to schedule a call and learn about your logistics needs in detail.<br />
     If you have any urgent inquiry, write to us directly at <a href="mailto:comercial@trackflow.com" class="link">comercial@trackflow.com</a>
     `,
-    'success'
-  );
+      'success'
+    );
 
-  form.reset();
-  updateCommentsCounter();
-  updateWarningBanner();
+    form.reset();
+    updateCommentsCounter();
+    updateWarningBanner();
+  } catch {
+    showStatus(
+      'We could not send your request right now. Check your connection and try again, or email <a href="mailto:comercial@trackflow.com" class="link">comercial@trackflow.com</a> directly.',
+      'error'
+    );
+  } finally {
+    isSubmitting = false;
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit request';
+    }
+  }
 });
 
 ['monthlyVolume', 'productType'].forEach((name) => {

@@ -15,6 +15,7 @@ def debug_print(*args, **kwargs) -> None:
 	if DEBUG_MODE:
 		print(*args, **kwargs)
 
+
 def main() -> int:
 	data_path = Path("data.csv")
 
@@ -23,10 +24,18 @@ def main() -> int:
 		return 1
 
 	try:
-		# Load (adjust path and kwargs as needed)
-		df = pd.read_csv(data_path)  # or read_json, read_excel
-	except (FileNotFoundError, PermissionError, pd.errors.ParserError, OSError) as exc:
-		print(f"ERROR: Failed to load CSV file: {exc}", file=sys.stderr)
+		df = pd.read_csv(data_path)
+	except FileNotFoundError:
+		print("ERROR: Input file was not found.", file=sys.stderr)
+		return 1
+	except PermissionError:
+		print("ERROR: Permission denied while reading the input file.", file=sys.stderr)
+		return 1
+	except pd.errors.ParserError:
+		print("ERROR: The CSV file could not be parsed. Check its format.", file=sys.stderr)
+		return 1
+	except OSError:
+		print("ERROR: An I/O error occurred while reading the input file.", file=sys.stderr)
 		return 1
 
 	if df.empty:
@@ -37,28 +46,30 @@ def main() -> int:
 	debug_print("df_dtypes", df.dtypes)
 
 	try:
-		# Drop fully null columns
 		df = df.dropna(axis=1, how="all")
-		debug_print("df_shape_after_drop_all_null_cols", df.shape)
+	except (TypeError, ValueError):
+		print("ERROR: Failed while removing empty columns.", file=sys.stderr)
+		return 1
 
-		# Fill or drop nulls in key columns (customise columns)
-		# df = df.dropna(subset=["required_col"])
-		# df["optional_col"] = df["optional_col"].fillna(0)
+	debug_print("df_shape_after_drop_all_null_cols", df.shape)
 
-		# Normalise column names (optional)
+	try:
 		df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
-		debug_print("df_columns", list(df.columns))
+	except (AttributeError, TypeError):
+		print("ERROR: Failed while normalising column names.", file=sys.stderr)
+		return 1
 
-		# Deduplicate (optional)
+	debug_print("df_columns", list(df.columns))
+
+	try:
 		before = len(df)
 		df = df.drop_duplicates()
 		debug_print("rows_dropped_duplicates", before - len(df))
-
-		# Sample output
-		debug_print("df_head", df.head())
-	except Exception as exc:
-		print(f"ERROR: Data processing failed: {exc}", file=sys.stderr)
+	except (TypeError, ValueError):
+		print("ERROR: Failed while removing duplicate rows.", file=sys.stderr)
 		return 1
+
+	debug_print("df_head", df.head())
 
 	return 0
 
